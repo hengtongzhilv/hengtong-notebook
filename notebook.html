@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>亨通记事本</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #F5F4F0;
+      color: #2C2C2C;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #1C3A8F;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(28,58,143,0.15);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: #1C3A8F;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 1px;
+    }
+
+    .brand-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-chip {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    .stat-chip strong {
+      color: #FFD166;
+    }
+
+    /* ===== CONTROLS ===== */
+    .controls-bar {
+      max-width: 1200px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border: 1.5px solid #D9D7CF;
+      border-radius: 10px;
+      background: #FFFFFF;
+      font-size: 14px;
+      font-family: inherit;
+      color: #2C2C2C;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-wrap input:focus {
+      border-color: #1C3A8F;
+      box-shadow: 0 0 0 3px rgba(28,58,143,0.1);
+    }
+
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #999;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1.5px solid #D9D7CF;
+      border-radius: 10px;
+      background: #FFFFFF;
+      font-size: 13px;
+      font-family: inherit;
+      color: #2C2C2C;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .filter-select:focus {
+      border-color: #1C3A8F;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #1C3A8F;
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background: #162D78;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(28,58,143,0.3);
+    }
+
+    .btn-ghost {
+      background: #FFFFFF;
+      color: #666;
+      border: 1.5px solid #D9D7CF;
+    }
+
+    .btn-ghost:hover {
+      border-color: #1C3A8F;
+      color: #1C3A8F;
+    }
+
+    /* ===== MAIN LIST ===== */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto 60px;
+      padding: 0 24px;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .list-title {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .list-title span {
+      color: #1C3A8F;
+      font-weight: 700;
+    }
+
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 20px 24px;
+      border: 1.5px solid #EBEBEA;
+      transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 14px 0 0 14px;
+    }
+
+    .card[data-priority="5"]::before { background: #E63946; }
+    .card[data-priority="4"]::before { background: #F4845F; }
+    .card[data-priority="3"]::before { background: #F7C948; }
+    .card[data-priority="2"]::before { background: #90BE6D; }
+    .card[data-priority="1"]::before { background: #8D99AE; }
+
+    .card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border-color: #D0CEc8;
+      transform: translateY(-1px);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .customer-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1C1A17;
+      margin-bottom: 4px;
+    }
+
+    .customer-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      color: #888;
+    }
+
+    .meta-item .icon {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    .meta-item a {
+      color: #1C3A8F;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .meta-item a:hover {
+      text-decoration: underline;
+    }
+
+    .stars {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .star {
+      font-size: 16px;
+      color: #E0DDD5;
+      transition: color 0.15s;
+    }
+
+    .star.filled {
+      color: #F7C948;
+    }
+
+    .star.empty {
+      color: #E8E6E0;
+    }
+
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .status-new {
+      background: #EEF2FF;
+      color: #4F46E5;
+    }
+
+    .status-following {
+      background: #FFF7ED;
+      color: #D97706;
+    }
+
+    .status-active {
+      background: #F0FDF4;
+      color: #16A34A;
+    }
+
+    .status-done {
+      background: #F9FAFB;
+      color: #9CA3AF;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: #F0EEE9;
+      margin: 12px 0;
+    }
+
+    .card-note {
+      font-size: 13.5px;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1.5px solid #E8E6E0;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s;
+      color: #888;
+    }
+
+    .icon-btn:hover {
+      border-color: #1C3A8F;
+      color: #1C3A8F;
+      background: #EEF2FF;
+    }
+
+    .icon-btn.delete:hover {
+      border-color: #E63946;
+      color: #E63946;
+      background: #FFF0F0;
+    }
+
+    .card-date {
+      font-size: 11.5px;
+      color: #B0ADA5;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .empty-desc {
+      font-size: 14px;
+      color: #999;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #FFFFFF;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid #F0EEE9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1C1A17;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: #F5F4F0;
+      cursor: pointer;
+      font-size: 18px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover {
+      background: #E8E6E0;
+    }
+
+    .modal-body {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-row label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-row input,
+    .form-row textarea,
+    .form-row select {
+      padding: 11px 14px;
+      border: 1.5px solid #D9D7CF;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #2C2C2C;
+      background: #FFFFFF;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus {
+      border-color: #1C3A8F;
+      box-shadow: 0 0 0 3px rgba(28,58,143,0.1);
+    }
+
+    .form-row textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.6;
+    }
+
+    .star-picker {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .star-picker .star-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid #E0DDD5;
+      background: transparent;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .star-picker .star-btn:hover,
+    .star-picker .star-btn.active {
+      background: #FFF9E6;
+      border-color: #F7C948;
+    }
+
+    .modal-footer {
+      padding: 16px 28px 24px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* Priority badge in modal */
+    .priority-label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1C2C2C;
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      header { padding: 0 16px; }
+      .brand-sub { display: none; }
+      .controls-bar { padding: 0 16px; margin-top: 20px; }
+      .container { padding: 0 16px; margin-top: 14px; }
+      .card { padding: 16px; }
+      .card-top { flex-direction: column; gap: 10px; }
+      .modal { border-radius: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="header-left">
+    <div class="logo">亨</div>
+    <div class="brand">
+      <span class="brand-name">亨通记事本</span>
+      <span class="brand-sub">客户管理</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat-chip">客户总数 <strong id="totalCount">0</strong></div>
+    <div class="stat-chip">重点客户 <strong id="vipCount">0</strong></div>
+  </div>
+</header>
+
+<!-- ===== CONTROLS ===== -->
+<div class="controls-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索客户名称或备注…" />
+  </div>
+  <select class="filter-select" id="filterPriority">
+    <option value="">全部优先级</option>
+    <option value="5">⭐⭐⭐⭐⭐ 五星（重点）</option>
+    <option value="4">⭐⭐⭐⭐ 四星</option>
+    <option value="3">⭐⭐⭐ 三星</option>
+    <option value="2">⭐⭐ 二星</option>
+    <option value="1">⭐ 一星</option>
+  </select>
+  <select class="filter-select" id="filterStatus">
+    <option value="">全部状态</option>
+    <option value="new">🆕 新客户</option>
+    <option value="following">🔄 跟进中</option>
+    <option value="active">✅ 进行中</option>
+    <option value="done">☑️ 已完成</option>
+  </select>
+  <button class="btn btn-primary" id="addBtn">＋ 添加客户</button>
+  <button class="btn btn-ghost" id="exportBtn">📤 导出</button>
+</div>
+
+<!-- ===== MAIN LIST ===== -->
+<div class="container">
+  <div class="list-header">
+    <div class="list-title">共 <span id="listCount">0</span> 条记录</div>
+  </div>
+  <div class="card-list" id="cardList"></div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">添加客户</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>客户名称 *</label>
+        <input type="text" id="fName" placeholder="请输入客户名称" />
+      </div>
+      <div class="form-row">
+        <label>联系方式</label>
+        <input type="text" id="fContact" placeholder="手机号 / 微信 / 邮箱" />
+      </div>
+      <div class="form-row">
+        <label>客户情况 / 备注</label>
+        <textarea id="fNote" placeholder="记录客户需求、意向产品、沟通要点等…"></textarea>
+      </div>
+      <div class="form-row">
+        <label>优先级</label>
+        <div class="star-picker" id="starPicker">
+          <button class="star-btn" data-val="1">⭐</button>
+          <button class="star-btn" data-val="2">⭐</button>
+          <button class="star-btn" data-val="3">⭐</button>
+          <button class="star-btn" data-val="4">⭐</button>
+          <button class="star-btn" data-val="5">⭐</button>
+        </div>
+        <div class="priority-label" id="priorityLabel">一星（普通客户）</div>
+      </div>
+      <div class="form-row">
+        <label>客户状态</label>
+        <select id="fStatus">
+          <option value="new">🆕 新客户</option>
+          <option value="following">🔄 跟进中</option>
+          <option value="active">✅ 进行中</option>
+          <option value="done">☑️ 已完成</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelBtn">取消</button>
+      <button class="btn btn-primary" id="saveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== DATA =====
+  const STORAGE_KEY = 'ht_notebook_data';
+  let customers = [];
+  let editId = null;
+
+  function loadData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try { customers = JSON.parse(raw); } catch(e) { customers = []; }
+    } else {
+      customers = [
+        {
+          id: Date.now() + 1,
+          name: '张三（示例）',
+          contact: '138 0000 1234',
+          note: '对智能家居产品有兴趣，主要需求是安防类设备。已在评估竞品，预计下月有采购决策。',
+          priority: 5,
+          status: 'following',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: Date.now() + 2,
+          name: '李四商贸',
+          contact: 'lisi_trade',
+          note: '批量采购意向，需求量大，但价格敏感度高，需要走大客户折扣流程。',
+          priority: 3,
+          status: 'active',
+          createdAt: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: Date.now() + 3,
+          name: '王女士',
+          contact: '139 9999 8888',
+          note: '初次接触，还在了解产品阶段，保持定期维护即可。',
+          priority: 1,
+          status: 'new',
+          createdAt: new Date(Date.now() - 172800000).toISOString()
+        }
+      ];
+      saveData();
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+  }
+
+  // ===== RENDER =====
+  function render() {
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const priorityFilter = document.getElementById('filterPriority').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    let list = customers.filter(c => {
+      const matchKw = !keyword ||
+        c.name.toLowerCase().includes(keyword) ||
+        c.note.toLowerCase().includes(keyword) ||
+        c.contact.toLowerCase().includes(keyword);
+      const matchP = !priorityFilter || String(c.priority) === priorityFilter;
+      const matchS = !statusFilter || c.status === statusFilter;
+      return matchKw && matchP && matchS;
+    });
+
+    // Stats
+    document.getElementById('totalCount').textContent = customers.length;
+    document.getElementById('vipCount').textContent = customers.filter(c => c.priority === 5).length;
+    document.getElementById('listCount').textContent = list.length;
+
+    const container = document.getElementById('cardList');
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📋</div>
+          <div class="empty-title">暂无记录</div>
+          <div class="empty-desc">点击右上角「添加客户」来新建第一条记录</div>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(c => {
+      const statusMap = {
+        new: { label: '新客户', cls: 'status-new' },
+        following: { label: '跟进中', cls: 'status-following' },
+        active: { label: '进行中', cls: 'status-active' },
+        done: { label: '已完成', cls: 'status-done' }
+      };
+      const st = statusMap[c.status] || statusMap.new;
+      const stars = Array.from({length: 5}, (_, i) =>
+        `<span class="star ${i < c.priority ? 'filled' : 'empty'}">★</span>`
+      ).join('');
+      const date = new Date(c.createdAt);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      return `
+        <div class="card" data-priority="${c.priority}" data-id="${c.id}">
+          <div class="card-top">
+            <div>
+              <div class="customer-name">${escHtml(c.name)}</div>
+              <div class="customer-meta">
+                <div class="meta-item"><span class="icon">📞</span> ${escHtml(c.contact || '—')}</div>
+                <div class="meta-item"><span class="icon">🕐</span> ${dateStr}</div>
+                <div class="meta-item"><div class="stars">${stars}</div></div>
+              </div>
+            </div>
+            <span class="card-status ${st.cls}">${st.label}</span>
+          </div>
+          ${c.note ? `<div class="card-note">${escHtml(c.note)}</div>` : ''}
+          <div class="card-divider"></div>
+          <div class="card-footer">
+            <div class="card-date">创建于 ${dateStr}</div>
+            <div class="card-actions">
+              <button class="icon-btn edit-btn" title="编辑" data-id="${c.id}">✏️</button>
+              <button class="icon-btn delete delete-btn" title="删除" data-id="${c.id}">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  // ===== MODAL =====
+  const modal = document.getElementById('modalOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  let selectedPriority = 3;
+
+  const PRIORITY_LABELS = {
+    1: '一星（普通客户）',
+    2: '二星（一般客户）',
+    3: '三星（潜在客户）',
+    4: '四星（重要客户）',
+    5: '五星（重点客户）'
+  };
+
+  function updateStarPicker(val) {
+    selectedPriority = val;
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+    document.getElementById('priorityLabel').textContent = PRIORITY_LABELS[val] || '';
+  }
+
+  function openModal(customer = null) {
+    editId = customer ? customer.id : null;
+    modalTitle.textContent = customer ? '编辑客户' : '添加客户';
+    document.getElementById('fName').value = customer ? customer.name : '';
+    document.getElementById('fContact').value = customer ? customer.contact : '';
+    document.getElementById('fNote').value = customer ? customer.note : '';
+    document.getElementById('fStatus').value = customer ? customer.status : 'new';
+    const p = customer ? customer.priority : 3;
+    updateStarPicker(p);
+    modal.classList.add('active');
+    if (!customer) document.getElementById('fName').focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    editId = null;
+  }
+
+  function saveCustomer() {
+    const name = document.getElementById('fName').value.trim();
+    if (!name) {
+      showToast('⚠️ 请输入客户名称');
+      document.getElementById('fName').focus();
+      return;
+    }
+    const contact = document.getElementById('fContact').value.trim();
+    const note = document.getElementById('fNote').value.trim();
+    const status = document.getElementById('fStatus').value;
+    const priority = selectedPriority;
+
+    if (editId) {
+      const idx = customers.findIndex(c => c.id === editId);
+      if (idx !== -1) {
+        customers[idx] = { ...customers[idx], name, contact, note, status, priority };
+        showToast('✅ 客户已更新');
+      }
+    } else {
+      customers.unshift({
+        id: Date.now(),
+        name, contact, note, status, priority,
+        createdAt: new Date().toISOString()
+      });
+      showToast('✅ 客户已添加');
+    }
+    saveData();
+    render();
+    closeModal();
+  }
+
+  function deleteCustomer(id) {
+    if (!confirm('确定要删除该客户记录吗？')) return;
+    customers = customers.filter(c => c.id !== id);
+    saveData();
+    render();
+    showToast('🗑️ 已删除');
+  }
+
+  // ===== EXPORT =====
+  function exportCSV() {
+    const headers = ['客户名称', '联系方式', '客户情况', '优先级', '状态', '创建时间'];
+    const rows = customers.map(c => [
+      c.name, c.contact, c.note,
+      PRIORITY_LABELS[c.priority] || '',
+      c.status, c.createdAt
+    ]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `亨通客户_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📤 已导出 CSV');
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ===== EVENTS =====
+  document.getElementById('addBtn').addEventListener('click', () => openModal());
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  document.getElementById('saveBtn').addEventListener('click', saveCustomer);
+
+  document.getElementById('starPicker').addEventListener('click', e => {
+    const btn = e.target.closest('.star-btn');
+    if (btn) updateStarPicker(parseInt(btn.dataset.val));
+  });
+
+  document.getElementById('cardList').addEventListener('click', e => {
+    const editBtn = e.target.closest('.edit-btn');
+    const delBtn = e.target.closest('.delete-btn');
+    if (editBtn) {
+      const c = customers.find(c => c.id === parseInt(editBtn.dataset.id));
+      if (c) openModal(c);
+    }
+    if (delBtn) deleteCustomer(parseInt(delBtn.dataset.id));
+  });
+
+  document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('filterPriority').addEventListener('change', render);
+  document.getElementById('filterStatus').addEventListener('change', render);
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+
+  // ===== INIT =====
+  loadData();
+  render();
+</script>
+</body>
+</html>
