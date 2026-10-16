@@ -9,28 +9,7 @@
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#F5F4F0;color:#2C2C2C;min-height:100vh}
 
-    /* LOGIN */
-    #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1C3A8F 0%,#0D1F5C 100%)}
-    .login-box{background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(0,0,0,.25);text-align:center;margin:20px}
-    .login-logo{width:60px;height:60px;background:#1C3A8F;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;margin:0 auto 20px;letter-spacing:-1px}
-    .login-title{font-size:22px;font-weight:700;color:#1C1A17;margin-bottom:6px}
-    .login-sub{font-size:13px;color:#999;margin-bottom:32px}
-    .login-input{width:100%;padding:14px 18px;border:2px solid #E8E6E0;border-radius:12px;font-size:16px;font-family:inherit;letter-spacing:3px;text-align:center;text-transform:uppercase;color:#1C3A8F;font-weight:600;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:12px}
-    .login-input:focus{border-color:#1C3A8F;box-shadow:0 0 0 3px rgba(28,58,143,.12)}
-    .login-input::placeholder{color:#ccc;letter-spacing:1px;font-weight:400;text-transform:none}
-    .login-btn{width:100%;padding:14px;background:#1C3A8F;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .2s,transform .15s}
-    .login-btn:hover{background:#162D78;transform:translateY(-1px)}
-    .login-error{color:#E63946;font-size:12.5px;margin-top:10px;height:18px;transition:opacity .2s}
-    .login-error.show{opacity:1}
-    .login-error.hide{opacity:0}
-    .login-footer{margin-top:28px;font-size:11px;color:rgba(255,255,255,.4)}
-    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-    .shake{animation:shake .4s ease}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    #appScreen.fade-in{animation:fadeIn .4s ease}
-
-    /* APP */
-    #appScreen{display:none}
+    /* HEADER */
     header{background:#1C3A8F;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(28,58,143,.15)}
     .header-left{display:flex;align-items:center;gap:14px}
     .logo{width:40px;height:40px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#1C3A8F;letter-spacing:-.5px;flex-shrink:0}
@@ -40,9 +19,6 @@
     .header-right{display:flex;align-items:center;gap:10px}
     .stat-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.85);font-weight:500}
     .stat-chip strong{color:#FFD166}
-    .user-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 14px;font-size:12px;color:#fff;font-weight:500}
-    .logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.75);cursor:pointer;font-family:inherit;transition:background .2s;display:flex;align-items:center;gap:5px}
-    .logout-btn:hover{background:rgba(255,255,255,.2)}
 
     .controls-bar{max-width:1200px;margin:32px auto 0;padding:0 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
     .search-wrap{position:relative;flex:1;min-width:200px}
@@ -135,70 +111,51 @@
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">亨</div>
-    <div class="login-title">亨通记事本</div>
-    <div class="login-sub">请输入您的登录密码</div>
-    <input type="password" id="loginInput" class="login-input" placeholder="例如：HT-LK8B-E2RF" maxlength="20" autocomplete="off" spellcheck="false" />
-    <button class="login-btn" id="loginBtn">登录</button>
-    <div class="login-error hide" id="loginError">密码错误，请检查后重试</div>
-    <div class="login-footer">亨通内部工具 · 请勿转发</div>
+<header>
+  <div class="header-left">
+    <div class="logo">亨</div>
+    <div class="brand">
+      <span class="brand-name">亨通记事本</span>
+      <span class="brand-sub">客户管理</span>
+    </div>
   </div>
+  <div class="header-right">
+    <div class="stat-chip">客户总数 <strong id="totalCount">0</strong></div>
+    <div class="stat-chip">重点客户 <strong id="vipCount">0</strong></div>
+  </div>
+</header>
+
+<div class="controls-bar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索客户名称或备注…" />
+  </div>
+  <select class="filter-select" id="filterPriority">
+    <option value="">全部优先级</option>
+    <option value="5">⭐⭐⭐⭐⭐ 五星（重点）</option>
+    <option value="4">⭐⭐⭐⭐ 四星</option>
+    <option value="3">⭐⭐⭐ 三星</option>
+    <option value="2">⭐⭐ 二星</option>
+    <option value="1">⭐ 一星</option>
+  </select>
+  <select class="filter-select" id="filterStatus">
+    <option value="">全部状态</option>
+    <option value="new">🆕 新客户</option>
+    <option value="following">🔄 跟进中</option>
+    <option value="active">✅ 进行中</option>
+    <option value="done">☑️ 已完成</option>
+  </select>
+  <button class="btn btn-primary" id="addBtn">＋ 添加客户</button>
+  <button class="btn btn-ghost" id="exportBtn">📤 导出</button>
 </div>
 
-<!-- APP -->
-<div id="appScreen">
-  <header>
-    <div class="header-left">
-      <div class="logo">亨</div>
-      <div class="brand">
-        <span class="brand-name">亨通记事本</span>
-        <span class="brand-sub">客户管理</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="stat-chip">客户总数 <strong id="totalCount">0</strong></div>
-      <div class="stat-chip">重点客户 <strong id="vipCount">0</strong></div>
-      <div class="user-badge" id="userBadge">用户1</div>
-      <button class="logout-btn" id="logoutBtn">🚪 退出</button>
-    </div>
-  </header>
-
-  <div class="controls-bar">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="搜索客户名称或备注…" />
-    </div>
-    <select class="filter-select" id="filterPriority">
-      <option value="">全部优先级</option>
-      <option value="5">⭐⭐⭐⭐⭐ 五星（重点）</option>
-      <option value="4">⭐⭐⭐⭐ 四星</option>
-      <option value="3">⭐⭐⭐ 三星</option>
-      <option value="2">⭐⭐ 二星</option>
-      <option value="1">⭐ 一星</option>
-    </select>
-    <select class="filter-select" id="filterStatus">
-      <option value="">全部状态</option>
-      <option value="new">🆕 新客户</option>
-      <option value="following">🔄 跟进中</option>
-      <option value="active">✅ 进行中</option>
-      <option value="done">☑️ 已完成</option>
-    </select>
-    <button class="btn btn-primary" id="addBtn">＋ 添加客户</button>
-    <button class="btn btn-ghost" id="exportBtn">📤 导出</button>
+<div class="container">
+  <div class="list-header">
+    <div class="list-title">共 <span id="listCount">0</span> 条记录</div>
   </div>
-
-  <div class="container">
-    <div class="list-header">
-      <div class="list-title">共 <span id="listCount">0</span> 条记录</div>
-    </div>
-    <div class="card-list" id="cardList"></div>
-  </div>
+  <div class="card-list" id="cardList"></div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-header">
@@ -240,108 +197,35 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============================================================
-   HASH-BASED AUTH — passwords never appear in plaintext.
-   SHA-256 hash (Web Crypto API) of each password is stored.
-   ============================================================ */
-
-const USER_HASHES = {
-  'e6cca4150d0728a0e9c736178b39b43e8606d853e2aeaa3c4dc75ee44e013707': '用户1',
-  'f1342f3a526762180103db22f28406777dd90c5261b404d4be81c3a2123d0d1e': '用户2',
-  'ed660b8f967c16ddc9e5a7163020a14ddc431965071fb4d42dc69650df7308dc': '用户3',
-  '828bdf63e7f3c6f907aa6b2be0aa4acc175149b3c244c77d711ba198787c5075': '用户4',
-  '9f81fd9390601c02032d1d45868ab0aefc9873990f211bf51592064efdbefb4d': '用户5',
-  '8c9e8b454243589f758f182f0737ec595b9c30f9a4eb077913138d61a3776a5a': '用户6',
-};
-
+const STORAGE_KEY = 'ht_notebook_data';
 const PRIORITY_LABELS = {
   1:'一星（普通客户）',2:'二星（一般客户）',3:'三星（潜在客户）',4:'四星（重要客户）',5:'五星（重点客户）'
 };
 
-const CURRENT_USER_KEY = 'ht_nb_curr';
-const STORAGE_PREFIX    = 'ht_nb_';
+const DEMO = [
+  { id: 1, name: '张三', contact: '138 0013 8001', note: '对光纤光缆有采购意向，初次接触 5 吨规模。', priority: 5, status: 'active',    createdAt: '2026-10-10T09:00:00.000Z' },
+  { id: 2, name: '李四商贸有限公司', contact: 'li4@trading.com', note: '北方区域分销商，本月已联系一次，月底前回访。', priority: 4, status: 'following', createdAt: '2026-10-08T14:30:00.000Z' },
+  { id: 3, name: '王女士', contact: '139 0013 9002', note: '海缆项目咨询中，技术对接待安排。', priority: 3, status: 'new',       createdAt: '2026-10-05T11:15:00.000Z' }
+];
 
-// --- SHA-256 via Web Crypto ---
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// --- DOM ---
-const loginScreen = document.getElementById('loginScreen');
-const appScreen   = document.getElementById('appScreen');
-const loginInput  = document.getElementById('loginInput');
-const loginBtn   = document.getElementById('loginBtn');
-const loginError = document.getElementById('loginError');
-const logoutBtn  = document.getElementById('logoutBtn');
-const userBadge  = document.getElementById('userBadge');
-
-// --- STATE ---
-let currentUser  = null;
-let customers    = [];
-let editId       = null;
-let selPriority  = 3;
-
-// --- LOGIN ---
-async function doLogin(pwd) {
-  const hash = await sha256(pwd.toUpperCase());
-  const user = USER_HASHES[hash];
-  if (!user) {
-    loginError.textContent = '密码错误，请检查后重试';
-    loginError.className   = 'login-error show';
-    loginInput.classList.add('shake');
-    setTimeout(() => loginInput.classList.remove('shake'), 500);
-    return;
-  }
-  currentUser = user;
-  sessionStorage.setItem(CURRENT_USER_KEY, user);
-  loadUserData();
-  loginScreen.style.display = 'none';
-  appScreen.style.display   = 'block';
-  appScreen.classList.add('fade-in');
-  userBadge.textContent = user;
-  render();
-}
-
-loginBtn.addEventListener('click', () => doLogin(loginInput.value));
-loginInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(loginInput.value); });
-
-logoutBtn.addEventListener('click', () => {
-  sessionStorage.removeItem(CURRENT_USER_KEY);
-  currentUser = null;
-  loginInput.value = '';
-  loginError.className = 'login-error hide';
-  appScreen.style.display   = 'none';
-  loginScreen.style.display = 'flex';
-  loginInput.focus();
-});
-
-// Auto-login
-(function autoLogin() {
-  const saved = sessionStorage.getItem(CURRENT_USER_KEY);
-  if (saved && Object.values(USER_HASHES).includes(saved)) {
-    currentUser = saved;
-    loadUserData();
-    loginScreen.style.display = 'none';
-    appScreen.style.display   = 'block';
-    userBadge.textContent     = saved;
-    render();
-  }
-})();
+let customers = [];
+let editId    = null;
+let selPrio   = 3;
 
 // --- DATA ---
-function storageKey() { return STORAGE_PREFIX + currentUser; }
-
-function loadUserData() {
-  try { customers = JSON.parse(localStorage.getItem(storageKey()) || 'null') || []; }
+function loadData() {
+  try { customers = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || []; }
   catch { customers = []; }
+  if (customers.length === 0) {
+    customers = DEMO.slice();
+    saveData();
+  }
 }
 
-function saveUserData() { localStorage.setItem(storageKey(), JSON.stringify(customers)); }
+function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(customers)); }
 
 // --- RENDER ---
 function render() {
-  if (!currentUser) return;
   const kw = document.getElementById('searchInput').value.trim().toLowerCase();
   const pf = document.getElementById('filterPriority').value;
   const sf = document.getElementById('filterStatus').value;
@@ -370,7 +254,6 @@ function render() {
     const stars = Array.from({length:5},(_,i) => `<span class="star ${i<x.priority?'filled':'empty'}">★</span>`).join('');
     const d = new Date(x.createdAt);
     const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const sc = stCls[x.status] || stCls.new;
     return `<div class="card" data-priority="${x.priority}" data-id="${x.id}">
       <div class="card-top">
         <div>
@@ -381,7 +264,7 @@ function render() {
             <div class="meta-item"><div class="stars">${stars}</div></div>
           </div>
         </div>
-        <span class="card-status ${sc}">${stMap[x.status]||'新客户'}</span>
+        <span class="card-status ${stCls[x.status]||stCls.new}">${stMap[x.status]||'新客户'}</span>
       </div>
       ${x.note?`<div class="card-note">${escHtml(x.note)}</div>`:''}
       <div class="card-divider"></div>
@@ -402,7 +285,7 @@ function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 const modal = document.getElementById('modalOverlay');
 
 function updateStarPicker(v) {
-  selPriority = v;
+  selPrio = v;
   document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) <= v));
   document.getElementById('priorityLabel').textContent = PRIORITY_LABELS[v];
 }
@@ -424,7 +307,7 @@ function closeModal() { modal.classList.remove('active'); editId = null; }
 function saveCustomer() {
   const name = document.getElementById('fName').value.trim();
   if (!name) { showToast('⚠️ 请输入客户名称'); document.getElementById('fName').focus(); return; }
-  const obj = { name, contact: document.getElementById('fContact').value.trim(), note: document.getElementById('fNote').value.trim(), status: document.getElementById('fStatus').value, priority: selPriority };
+  const obj = { name, contact: document.getElementById('fContact').value.trim(), note: document.getElementById('fNote').value.trim(), status: document.getElementById('fStatus').value, priority: selPrio };
   if (editId) {
     const i = customers.findIndex(c => c.id === editId);
     if (i !== -1) { customers[i] = { ...customers[i], ...obj }; showToast('✅ 客户已更新'); }
@@ -432,13 +315,13 @@ function saveCustomer() {
     customers.unshift({ ...obj, id: Date.now(), createdAt: new Date().toISOString() });
     showToast('✅ 客户已添加');
   }
-  saveUserData(); render(); closeModal();
+  saveData(); render(); closeModal();
 }
 
 function deleteCustomer(id) {
   if (!confirm('确定要删除该客户记录吗？')) return;
   customers = customers.filter(c => c.id !== id);
-  saveUserData(); render(); showToast('🗑️ 已删除');
+  saveData(); render(); showToast('🗑️ 已删除');
 }
 
 function exportCSV() {
@@ -446,7 +329,7 @@ function exportCSV() {
   const rows = customers.map(c => [c.name, c.contact, c.note, PRIORITY_LABELS[c.priority]||'', c.status, c.createdAt]);
   const csv = [hdrs,...rows].map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:`亨通客户_${currentUser}_${new Date().toISOString().slice(0,10)}.csv`});
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:`亨通客户_${new Date().toISOString().slice(0,10)}.csv`});
   a.click(); URL.revokeObjectURL(a.href);
   showToast('📤 已导出 CSV');
 }
@@ -476,6 +359,10 @@ document.getElementById('filterPriority').addEventListener('change', render);
 document.getElementById('filterStatus').addEventListener('change', render);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
+
+// --- INIT ---
+loadData();
+render();
 </script>
 </body>
 </html>
